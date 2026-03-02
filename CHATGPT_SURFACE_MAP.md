@@ -6,67 +6,71 @@
   - `web/index.php:30-37` (`$appContext`)
   - `web/index.php:3445-3460` (top bar tab "ChatGPT")
 - ChatGPT page mount:
-  - `web/index.php:6002-6612` (SSR structure)
+  - `web/index.php:5638` (module view include)
+  - `web/modules/chatgpt/views/session.php` (SSR structure)
 - ChatGPT runtime JS:
-  - `web/index.php:6644-7914`
+  - `web/modules/chatgpt/views/session.php:669-1912`
 
-## 2. ChatGPT AJAX Endpoints in `web/index.php`
+## 2. ChatGPT AJAX Endpoints
 
-- Auth poll:
-  - `chatgpt_auth` -> `web/index.php:71-77`
-- Exchange:
-  - start -> `web/index.php:79-207`
-  - status -> `web/index.php:209-239`
-- Telemetry:
-  - `chatgpt_telemetry` -> `web/index.php:241-290`
-- Sync jobs:
-  - start -> `web/index.php:292-348`
-  - status -> `web/index.php:350-380`
-  - single-thread sync history -> `web/index.php:382-420`
+- Dispatch hook in core:
+  - `web/index.php:74` (`chatgpt_module_handle_ajax_request()`)
+- Module handler file:
+  - `web/modules/chatgpt/http/ajax.php`
+- Endpoint branches:
+  - `chatgpt_auth` -> `web/modules/chatgpt/http/ajax.php:7`
+  - `chatgpt_exchange_start` -> `web/modules/chatgpt/http/ajax.php:15`
+  - `chatgpt_exchange_status` -> `web/modules/chatgpt/http/ajax.php:145`
+  - `chatgpt_telemetry` -> `web/modules/chatgpt/http/ajax.php:177`
+  - `chatgpt_sync_start` -> `web/modules/chatgpt/http/ajax.php:228`
+  - `chatgpt_sync_job_status` -> `web/modules/chatgpt/http/ajax.php:286`
+  - `chatgpt_sync_history` -> `web/modules/chatgpt/http/ajax.php:318`
 
 ## 3. ChatGPT Server-side Data Bootstrap in `web/index.php`
 
 - Gateway/auth/thread selection:
-  - `web/index.php:1440-1509`
+  - `web/index.php:1084-1150`
 - Thread message preload:
-  - `web/index.php:1511-1522`
+  - `web/index.php:1153-1164`
+- Catalog source:
+  - `chatgpt_module_catalog()` -> `web/index.php:1102`
+  - implementation in `web/modules/chatgpt/module.php`
 
-## 4. ChatGPT UI Components (SSR)
+## 4. ChatGPT UI Components (SSR, module file)
 
 - Left rail:
-  - models/projects/groups/history toggles -> `web/index.php:6051-6130`
+  - models/projects/groups/history toggles -> `web/modules/chatgpt/views/session.php`
 - Account/system modal trigger:
-  - `web/index.php:6132-6147`
+  - `web/modules/chatgpt/views/session.php`
 - Main stage:
-  - thread panel + message list -> `web/index.php:6177-6539`
+  - thread panel + message list -> `web/modules/chatgpt/views/session.php`
 - History modal + sync controls:
-  - `web/index.php:6565-6612`
+  - `web/modules/chatgpt/views/session.php`
 - "More features" modal:
-  - `web/index.php:6613-6642`
+  - `web/modules/chatgpt/views/session.php`
 
-## 5. ChatGPT UI Runtime Functions (JS)
+## 5. ChatGPT UI Runtime Functions (JS, module file)
 
 - Collapse sections:
-  - `web/index.php:6649-6666`
+  - `web/modules/chatgpt/views/session.php`
 - Scroll/autofollow:
   - `nearBottom`, `scheduleStickToBottom`, `revealLatest`
-  - `web/index.php:6789-6836`
+  - `web/modules/chatgpt/views/session.php`
 - Message render/update:
   - builders and update path:
-    - `web/index.php:6916-7057`
-    - `web/index.php:7058-7157`
+    - `web/modules/chatgpt/views/session.php`
 - Sync status polling UX:
-  - `web/index.php:7288-7428`
+  - `web/modules/chatgpt/views/session.php:1287-1464`
 - Exchange polling:
-  - `web/index.php:7497-7566`
+  - `web/modules/chatgpt/views/session.php:1496-1565`
 - Optimistic send + form reset + placeholder:
-  - `web/index.php:7587-7655`
+  - `web/modules/chatgpt/views/session.php:1587-1655`
 - Mode map and telemetry events:
   - `toolModeMap` and `emitTelemetry`
-  - `web/index.php:7673-7719`
+  - `web/modules/chatgpt/views/session.php:1672-1719`
   - telemetry emit calls:
     - `tool_selected` / `composer_mode_changed`
-    - `web/index.php:7780-7791`
+    - `web/modules/chatgpt/views/session.php:1779-1791`
 
 ## 6. PHP -> Gateway Adapter Surface (`web/includes/chatgpt_api.php`)
 
@@ -132,7 +136,10 @@
 
 ## 10. Coupling Points to Core App
 
-- ChatGPT and non-ChatGPT views are coupled in a single monolithic file:
-  - `web/index.php` (routing + rendering + handlers + JS runtime)
+- Core keeps routing/shell/data bootstrap and mounts module entry points:
+  - `web/index.php:74` (AJAX delegate)
+  - `web/index.php:5638` (view include)
+- Module view still depends on parent variable scope (transitional coupling):
+  - `web/modules/chatgpt/views/session.php`
 - ChatGPT tab shares topbar and app shell logic with LinkedIn and Editorial:
-  - `web/index.php:3445-3484`
+  - `web/index.php` topbar section

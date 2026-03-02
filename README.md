@@ -17,6 +17,8 @@ Szybki start po klonie:
 Refactor workflow:
 - execution contract: [CODEX_AGENT_PLAYBOOK.md](CODEX_AGENT_PLAYBOOK.md)
 - current progress: [REFACTOR_PROGRESS.md](REFACTOR_PROGRESS.md)
+- extraction plan: [REFACTOR_PLAN.md](REFACTOR_PLAN.md)
+- module boundary: [MODULE_CONTRACT.md](MODULE_CONTRACT.md)
 
 ## Sekrety i konfiguracja
 

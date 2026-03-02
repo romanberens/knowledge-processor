@@ -7,9 +7,9 @@
    - auth state, threads list, selected thread, initial messages
    - `web/index.php:1440-1522`.
 3. SSR renders shell + side rail + thread log:
-   - `web/index.php:6034-6612`.
+   - `web/modules/chatgpt/views/session.php`.
 4. Runtime JS initializes collapse panels, scroll, modals, polling handlers:
-   - `web/index.php:6644-7914`.
+   - `web/modules/chatgpt/views/session.php`.
 
 ## 2. Send Message + Streaming-like Polling
 
@@ -20,11 +20,11 @@
    - clear input + autosize
    - append assistant placeholder `...`.
 3. Front sends `POST ?ajax=chatgpt_exchange_start`:
-   - `web/index.php:7623-7627`.
+   - `web/modules/chatgpt/views/session.php`.
 4. PHP endpoint:
+   - delegated to module AJAX handler (`web/modules/chatgpt/http/ajax.php`)
    - upserts/creates thread (`chatgpt_thread_upsert`)
-   - starts async exchange (`chatgpt_thread_exchange_start`)
-   - `web/index.php:79-207`.
+   - starts async exchange (`chatgpt_thread_exchange_start`).
 5. Gateway endpoint `/v1/threads/{id}/exchange/start`:
    - creates user+assistant queued messages in Postgres
    - stores task in `exchange_tasks`
@@ -48,7 +48,7 @@
 3. Gateway starts VNC/noVNC + browser login stack:
    - `ai_session_gateway/app/auth.py:222-280`.
 4. Browser polls `?ajax=chatgpt_auth` every 2.5s:
-   - `web/index.php:7833-7903`.
+   - `web/modules/chatgpt/views/session.php`.
 5. On `AUTH_OK`, UI reloads page to refresh state:
    - `web/index.php:7891-7893`.
 
@@ -60,9 +60,9 @@
    - `Pełna synchronizacja`
    - controls at `web/index.php:6575-6578`.
 2. JS sends `POST ?ajax=chatgpt_sync_start`:
-   - `web/index.php:7430-7465`.
+   - `web/modules/chatgpt/views/session.php`.
 3. PHP forwards to gateway `/v1/sync/*/start`:
-   - `web/index.php:292-348`
+   - `web/modules/chatgpt/http/ajax.php`
    - `web/includes/chatgpt_api.php:215-231`.
 4. Gateway queues sync task and starts worker:
    - `ai_session_gateway/app/main.py:1380-1423`.
@@ -73,7 +73,7 @@
 6. JS polls `?ajax=chatgpt_sync_job_status` and updates:
    - progress bar
    - live telemetry text ("czyta", "przewija", "dociaga")
-   - `web/index.php:7288-7428`.
+   - `web/modules/chatgpt/views/session.php`.
 7. On completion UI reports counters and reloads:
    - `web/index.php:7375-7411`.
 

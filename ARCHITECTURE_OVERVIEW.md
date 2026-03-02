@@ -22,10 +22,12 @@ Server-rendered PHP control panel with two Python FastAPI backends:
 1. Presentation layer (PHP SSR + inline JS)
    - Main shell, top navigation, chat UI, sync controls:
      - `web/index.php:3438-3514`
-     - `web/index.php:6002-7914`
+     - `web/index.php` mounts ChatGPT module view
+     - `web/modules/chatgpt/views/session.php`
 2. Web integration layer (PHP include adapters)
    - ChatGPT adapter: `web/includes/chatgpt_api.php:7-255`
    - Scraper adapter: `web/includes/scraper_api.php:7-260`
+   - ChatGPT module dispatcher: `web/modules/chatgpt/http/ajax.php`
 3. ChatGPT gateway domain/API layer
    - FastAPI endpoints and worker orchestration:
      - `ai_session_gateway/app/main.py:128-1690`
@@ -57,6 +59,7 @@ Server-rendered PHP control panel with two Python FastAPI backends:
 1. Chat UI send flow:
    - Browser JS in `web/index.php` calls:
      - `/?view=chatgpt&tab=session&ajax=chatgpt_exchange_start`
+   - request is delegated through module handler (`web/modules/chatgpt/http/ajax.php`)
    - PHP proxy calls gateway `/v1/threads/{id}/exchange/start` via `chatgpt_api.php`
    - Gateway worker executes Playwright exchange and updates Postgres
    - Browser polls `chatgpt_exchange_status` (`web/index.php:7497-7566`)

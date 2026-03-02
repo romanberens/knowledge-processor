@@ -15,13 +15,20 @@
 ├── web/
 │   ├── index.php
 │   ├── Dockerfile
-│   └── includes/
+│   ├── includes/
 │       ├── bootstrap.php
 │       ├── db.php
 │       ├── repository.php
 │       ├── scraper_api.php
 │       ├── chatgpt_api.php
 │       └── strapi_api.php
+│   └── modules/
+│       └── chatgpt/
+│           ├── module.php
+│           ├── manifest.php
+│           ├── http/ajax.php
+│           ├── views/session.php
+│           └── assets/
 ├── ai_session_gateway/
 │   ├── Dockerfile
 │   ├── requirements.txt
@@ -71,8 +78,10 @@
 
 - `web/index.php`
   - SSR layout + top nav + all page views
-  - AJAX dispatch for scraper, ChatGPT, telemetry, sync
-  - ChatGPT interactive JS runtime embedded inline
+  - AJAX dispatch for scraper + generic app actions
+  - mounts ChatGPT module entry points
+- `web/modules/chatgpt/`
+  - extracted ChatGPT module shell + AJAX dispatcher + session view/runtime
 - `web/includes/chatgpt_api.php`
   - HTTP adapter/proxy from PHP to `ai_session_gateway`
   - One function per gateway endpoint surface
