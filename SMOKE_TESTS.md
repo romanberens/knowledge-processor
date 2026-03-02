@@ -2,7 +2,7 @@
 
 ## Phase
 
-- `PHASE-2 / EXTRACTION` (steps 1-4)
+- `PHASE-2 / EXTRACTION` (steps 1-6)
 - Date: 2026-03-02
 
 ## Checks Executed

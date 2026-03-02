@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-5 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-6 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -68,6 +68,15 @@
 3. Module web route map introduced:
    - `web/modules/chatgpt/routes/web.php` (`chatgpt_module_web_routes()`)
 
+## Completed in Step 6
+
+1. Core shell now keeps only minimal ChatGPT context fields for topbar:
+   - `chatgptGatewayOk`
+   - `chatgptAuthState`
+2. Strict DTO whitelist introduced for module view rendering:
+   - `web/modules/chatgpt/controllers/ChatController.php` (`buildViewModel`)
+3. Session view receives only whitelisted keys from controller bridge (reduced implicit coupling).
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -80,9 +89,9 @@
 
 ## Pending (next)
 
-1. Reduce `views/session.php` variable contract to stricter DTO (drop redundant keys and implicit dependencies).
-2. Run browser smoke validation for chat send/poll/sync flows after wrapper split.
-3. Prepare PHASE-3 integration pass and marker cleanup.
+1. Run browser smoke validation for chat send/poll/sync flows after DTO bridge.
+2. Prepare PHASE-3 integration pass and marker cleanup.
+3. Decide fate of legacy synchronous `chatgpt_send_message` POST action in `web/index.php`.
 
 ## Validation Checklist
 

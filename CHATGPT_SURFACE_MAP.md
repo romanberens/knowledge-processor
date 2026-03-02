@@ -6,7 +6,7 @@
   - `web/index.php:30-37` (`$appContext`)
   - `web/index.php:2731-2746` (top bar tab "ChatGPT")
 - ChatGPT page mount:
-  - `web/index.php:4466` (`chatgpt_module_render_session(...)`)
+  - `web/index.php:4445` (`chatgpt_module_render_session(...)`)
   - `web/modules/chatgpt/controllers/ChatController.php` (`renderSession`)
   - `web/modules/chatgpt/views/session.php` (SSR structure)
 - ChatGPT styles/runtime assets:
@@ -43,6 +43,8 @@ Supported actions:
   - `web/index.php:1087` (`chatgpt_module_build_view_context(...)`)
 - Module context service:
   - `web/modules/chatgpt/services/ChatViewContextBuilder.php`
+- Strict view DTO bridge:
+  - `web/modules/chatgpt/controllers/ChatController.php` (`buildViewModel`)
 - Catalog source:
   - `chatgpt_module_catalog()` in `web/modules/chatgpt/module.php`
 
@@ -115,7 +117,7 @@ Supported actions:
 
 - Core keeps routing/shell/data bootstrap and mounts module entry points:
   - `web/index.php:74` (AJAX delegate)
-  - `web/index.php:4466` (module session render call)
+  - `web/index.php:4445` (module session render call)
 - Module view still depends on module-provided context keys (transitional coupling):
   - `web/modules/chatgpt/views/session.php`
 - ChatGPT shares topbar/shell with LinkedIn and Editorial:

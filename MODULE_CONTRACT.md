@@ -52,7 +52,6 @@ Response style:
 
 ## Module View Contract (current)
 
-- `web/modules/chatgpt/views/session.php` expects the same variable scope as previous `web/index.php` inline block, including:
 - `web/modules/chatgpt/views/session.php` receives context map via module controller and expects keys including:
   - auth/session vars (`$chatgptAuthState`, `$chatgptHasLoginSession`, etc.)
   - thread/message vars (`$chatgptThreadId`, `$chatgptThreads`, `$chatgptMessages`)
@@ -64,6 +63,6 @@ Response style:
 
 ## Pending Contract Cleanup
 
-1. Replace variable-scope coupling with explicit view context array or module controller DTO.
-2. Define web route contract in `routes/web.php` and mount ChatGPT SSR via module controller.
-3. Stabilize internal module contract for sync/exchange task lifecycle (to support next persistence refactor).
+1. Stabilize internal module contract for sync/exchange task lifecycle (to support next persistence refactor).
+2. Decide whether to keep or remove legacy synchronous `chatgpt_send_message` POST flow in core.
+3. Add browser regression checklist execution results (interactive smoke run).

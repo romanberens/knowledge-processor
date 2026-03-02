@@ -15,7 +15,7 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-5 completed: shell + assets + api wrappers + context/render wrappers |
+| ChatGPT code extraction | In progress | Steps 1-6 completed: shell + assets + api wrappers + context/render + strict DTO |
 | Integration and regression validation | Pending | Phase 3 |
 
 ## Activity Log
@@ -58,9 +58,13 @@
   - added module SSR render wrapper `chatgpt_module_render_session(...)`
   - moved ChatGPT session mount in core from direct `require` to module controller call
   - added module web route map (`routes/web.php`)
+- Completed PHASE-2 extraction step 6:
+  - reduced core ChatGPT context usage to topbar-only fields (`chatgptGatewayOk`, `chatgptAuthState`)
+  - introduced strict view DTO whitelist in `ChatController::buildViewModel(...)`
+  - reduced implicit variable leakage between core and module template
 
 ## Next Actions
 
-1. Reduce view variable contract in `views/session.php` to explicit DTO keys.
-2. Execute browser smoke tests for send/stream/sync/chat-history flows.
+1. Execute browser smoke tests for send/stream/sync/chat-history flows.
+2. Resolve legacy synchronous `chatgpt_send_message` path vs AJAX exchange path.
 3. Prepare PHASE-3 integration pass (regression + cleanup markers).

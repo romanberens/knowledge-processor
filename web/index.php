@@ -1085,29 +1085,8 @@ $canScrape = !$isRunning && $authState === 'AUTH_OK' && !$hasLoginSession;
 // [REF-MOD-CHATGPT]
 // ChatGPT view context is prepared in module service layer.
 $chatgptContext = chatgpt_module_build_view_context($view, $chatgptTab, $_GET, $_SESSION);
-$chatgptGatewayState = $chatgptContext['chatgptGatewayState'];
-$chatgptGatewayOk = $chatgptContext['chatgptGatewayOk'];
-$chatgptLoginSessionId = $chatgptContext['chatgptLoginSessionId'];
-$chatgptNovncUrl = $chatgptContext['chatgptNovncUrl'];
-$chatgptAuthInfo = $chatgptContext['chatgptAuthInfo'];
-$chatgptAuthState = $chatgptContext['chatgptAuthState'];
-$chatgptEffectiveSessionId = $chatgptContext['chatgptEffectiveSessionId'];
-$chatgptEffectiveNovncUrl = $chatgptContext['chatgptEffectiveNovncUrl'];
-$chatgptHasLoginSession = $chatgptContext['chatgptHasLoginSession'];
-$chatgptAssistantId = $chatgptContext['chatgptAssistantId'];
-$chatgptProjectId = $chatgptContext['chatgptProjectId'];
-$chatgptThreadId = $chatgptContext['chatgptThreadId'];
-$chatgptNewChat = $chatgptContext['chatgptNewChat'];
-$chatgptCatalog = $chatgptContext['chatgptCatalog'];
-$chatgptModels = $chatgptContext['chatgptModels'];
-$chatgptProjects = $chatgptContext['chatgptProjects'];
-$chatgptGroups = $chatgptContext['chatgptGroups'];
-$chatgptSchema = $chatgptContext['chatgptSchema'];
-$chatgptThreadIndex = $chatgptContext['chatgptThreadIndex'];
-$chatgptThreads = $chatgptContext['chatgptThreads'];
-$chatgptThreadsRecent = $chatgptContext['chatgptThreadsRecent'];
-$chatgptMessagesPayload = $chatgptContext['chatgptMessagesPayload'];
-$chatgptMessages = $chatgptContext['chatgptMessages'];
+$chatgptGatewayOk = (bool)($chatgptContext['chatgptGatewayOk'] ?? false);
+$chatgptAuthState = (string)($chatgptContext['chatgptAuthState'] ?? 'AUTH_UNKNOWN');
 
 $feedSource = $_GET['feed_source'] ?? '';
 $feedItems = $view === 'feed' ? fetch_feed_items($pdo, $feedSource ?: null, 150) : [];
