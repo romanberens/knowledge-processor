@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (step 1 - shell + safe moves)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-3 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -26,29 +26,54 @@
 5. Static model/project/group catalog moved:
    - new location: `chatgpt_module_catalog()` in `web/modules/chatgpt/module.php`
 
+## Completed in Step 2
+
+1. ChatGPT CSS moved from inline `<style>` block to:
+   - `web/modules/chatgpt/assets/css/chatgpt.module.css`
+2. ChatGPT JS runtime moved from inline `<script>` to:
+   - `web/modules/chatgpt/assets/js/chatgpt.module.js`
+3. Module assets mounted from core shell:
+   - `web/index.php` loads `chatgpt.module.css` only for `view=chatgpt`
+   - `web/modules/chatgpt/views/session.php` loads `chatgpt.module.js`
+
+## Completed in Step 3
+
+1. Module API routing contract introduced:
+   - `web/modules/chatgpt/routes/api.php` (`chatgpt_module_api_routes()`)
+2. AJAX dispatcher reduced to module route dispatch:
+   - `web/modules/chatgpt/http/ajax.php`
+3. Controller/service/provider wrapper flow introduced:
+   - `controllers/ChatApiController.php`
+   - `services/ChatOrchestrator.php`
+   - `services/SessionManager.php`
+   - `providers/GatewayProvider.php`
+4. Module bootstrap now wires internal layers explicitly:
+   - `web/modules/chatgpt/module.php`
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
 | --- | --- | --- |
-| `web/index.php` (`chatgpt_*` AJAX handlers) | `web/modules/chatgpt/http/ajax.php` | migrated |
-| `web/index.php` (`if ($view === 'chatgpt')` large SSR + JS block) | `web/modules/chatgpt/views/session.php` | migrated |
+| `web/index.php` (`chatgpt_*` AJAX handlers) | `web/modules/chatgpt/http/ajax.php` + `controllers/ChatApiController.php` | migrated |
+| `web/index.php` (`if ($view === 'chatgpt')` large SSR + JS block) | `web/modules/chatgpt/views/session.php` + `assets/js/chatgpt.module.js` | migrated |
+| `web/index.php` inline ChatGPT CSS | `web/modules/chatgpt/assets/css/chatgpt.module.css` | migrated |
 | `web/index.php` (`$chatgptModels/$chatgptProjects/$chatgptGroups`) | `web/modules/chatgpt/module.php` (`chatgpt_module_catalog`) | migrated |
 | `web/index.php` (module bootstrapping absent) | `require_once web/modules/chatgpt/module.php` + `chatgpt_module_handle_ajax_request()` | migrated |
 
-## Pending Step 2 (next)
+## Pending (next)
 
-1. Move ChatGPT CSS from inline `<style>` block into:
-   - `web/modules/chatgpt/assets/css/chatgpt.module.css`
-2. Move ChatGPT JS runtime from `views/session.php` into:
-   - `web/modules/chatgpt/assets/js/chatgpt.module.js`
-3. Introduce module route/controller/service wrappers and migrate glue logic:
-   - `controllers/ChatController.php`
-   - `controllers/ChatApiController.php`
-   - `services/ChatOrchestrator.php`
+1. Move ChatGPT data bootstrap (thread/auth/schema preload) from `web/index.php` to module-oriented service/controller context.
+2. Introduce module web-route wrapper (`routes/web.php`) for SSR mounting contract.
+3. Run browser smoke validation for chat send/poll/sync flows after wrapper split.
 
-## Validation Checklist for this step
+## Validation Checklist
 
 - `php -l web/index.php` pass
 - `php -l web/modules/chatgpt/module.php` pass
 - `php -l web/modules/chatgpt/http/ajax.php` pass
+- `php -l web/modules/chatgpt/routes/api.php` pass
+- `php -l web/modules/chatgpt/controllers/ChatApiController.php` pass
+- `php -l web/modules/chatgpt/services/ChatOrchestrator.php` pass
+- `php -l web/modules/chatgpt/services/SessionManager.php` pass
+- `php -l web/modules/chatgpt/providers/GatewayProvider.php` pass
 - `php -l web/modules/chatgpt/views/session.php` pass

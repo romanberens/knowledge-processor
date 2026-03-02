@@ -4,27 +4,37 @@
 
 - App context switch:
   - `web/index.php:30-37` (`$appContext`)
-  - `web/index.php:3445-3460` (top bar tab "ChatGPT")
+  - `web/index.php:2731-2746` (top bar tab "ChatGPT")
 - ChatGPT page mount:
-  - `web/index.php:5638` (module view include)
+  - `web/index.php:4511` (module view include)
   - `web/modules/chatgpt/views/session.php` (SSR structure)
-- ChatGPT runtime JS:
-  - `web/modules/chatgpt/views/session.php:669-1912`
+- ChatGPT styles/runtime assets:
+  - `web/index.php:1909` (`/modules/chatgpt/assets/css/chatgpt.module.css?v=1`)
+  - `web/modules/chatgpt/views/session.php:643` (`/modules/chatgpt/assets/js/chatgpt.module.js`)
 
-## 2. ChatGPT AJAX Endpoints
+## 2. ChatGPT AJAX Surface (module)
 
 - Dispatch hook in core:
   - `web/index.php:74` (`chatgpt_module_handle_ajax_request()`)
-- Module handler file:
+- Dispatch entrypoint:
   - `web/modules/chatgpt/http/ajax.php`
-- Endpoint branches:
-  - `chatgpt_auth` -> `web/modules/chatgpt/http/ajax.php:7`
-  - `chatgpt_exchange_start` -> `web/modules/chatgpt/http/ajax.php:15`
-  - `chatgpt_exchange_status` -> `web/modules/chatgpt/http/ajax.php:145`
-  - `chatgpt_telemetry` -> `web/modules/chatgpt/http/ajax.php:177`
-  - `chatgpt_sync_start` -> `web/modules/chatgpt/http/ajax.php:228`
-  - `chatgpt_sync_job_status` -> `web/modules/chatgpt/http/ajax.php:286`
-  - `chatgpt_sync_history` -> `web/modules/chatgpt/http/ajax.php:318`
+- Route map:
+  - `web/modules/chatgpt/routes/api.php` (`chatgpt_module_api_routes()`)
+- Controller:
+  - `web/modules/chatgpt/controllers/ChatApiController.php`
+- Orchestration stack:
+  - `web/modules/chatgpt/services/ChatOrchestrator.php`
+  - `web/modules/chatgpt/services/SessionManager.php`
+  - `web/modules/chatgpt/providers/GatewayProvider.php`
+
+Supported actions:
+- `chatgpt_auth`
+- `chatgpt_exchange_start`
+- `chatgpt_exchange_status`
+- `chatgpt_telemetry`
+- `chatgpt_sync_start`
+- `chatgpt_sync_job_status`
+- `chatgpt_sync_history`
 
 ## 3. ChatGPT Server-side Data Bootstrap in `web/index.php`
 
@@ -36,110 +46,77 @@
   - `chatgpt_module_catalog()` -> `web/index.php:1102`
   - implementation in `web/modules/chatgpt/module.php`
 
-## 4. ChatGPT UI Components (SSR, module file)
+## 4. ChatGPT UI Components (SSR)
 
-- Left rail:
-  - models/projects/groups/history toggles -> `web/modules/chatgpt/views/session.php`
-- Account/system modal trigger:
+- File:
   - `web/modules/chatgpt/views/session.php`
-- Main stage:
-  - thread panel + message list -> `web/modules/chatgpt/views/session.php`
-- History modal + sync controls:
-  - `web/modules/chatgpt/views/session.php`
-- "More features" modal:
-  - `web/modules/chatgpt/views/session.php`
+- Components rendered:
+  - left rail (models/projects/groups/history)
+  - account/system modal trigger
+  - thread list + message panel
+  - history modal + sync controls
+  - "more" modal
 
-## 5. ChatGPT UI Runtime Functions (JS, module file)
+## 5. ChatGPT UI Runtime (JS asset)
 
-- Collapse sections:
-  - `web/modules/chatgpt/views/session.php`
-- Scroll/autofollow:
-  - `nearBottom`, `scheduleStickToBottom`, `revealLatest`
-  - `web/modules/chatgpt/views/session.php`
-- Message render/update:
-  - builders and update path:
-    - `web/modules/chatgpt/views/session.php`
-- Sync status polling UX:
-  - `web/modules/chatgpt/views/session.php:1287-1464`
-- Exchange polling:
-  - `web/modules/chatgpt/views/session.php:1496-1565`
-- Optimistic send + form reset + placeholder:
-  - `web/modules/chatgpt/views/session.php:1587-1655`
-- Mode map and telemetry events:
-  - `toolModeMap` and `emitTelemetry`
-  - `web/modules/chatgpt/views/session.php:1672-1719`
-  - telemetry emit calls:
-    - `tool_selected` / `composer_mode_changed`
-    - `web/modules/chatgpt/views/session.php:1779-1791`
+- File:
+  - `web/modules/chatgpt/assets/js/chatgpt.module.js`
+- Main behavior groups:
+  - collapse sections and left-rail toggles
+  - scroll/autofollow (`nearBottom`, `scheduleStickToBottom`, `revealLatest`)
+  - optimistic send + placeholder + polling
+  - exchange polling and streamed content updates
+  - history sync progress and job status polling
+  - telemetry emits (`tool_selected`, `composer_mode_changed`)
+  - modal orchestration (ops/history/more)
 
-## 6. PHP -> Gateway Adapter Surface (`web/includes/chatgpt_api.php`)
+## 6. PHP -> Gateway Adapter Surface
 
-- Base request wrapper:
-  - `chatgpt_request` -> `web/includes/chatgpt_api.php:12-63`
-- Auth/session:
-  - `chatgpt_status`, `chatgpt_auth_status`, `chatgpt_auth_login_*`
-  - `web/includes/chatgpt_api.php:65-119`
-- Data model endpoints:
-  - schema/threads/messages/events
-  - `web/includes/chatgpt_api.php:121-255`
-- Exchange/sync endpoints:
-  - exchange start/status/history sync/sync jobs
-  - `web/includes/chatgpt_api.php:185-241`
+- File:
+  - `web/includes/chatgpt_api.php`
+- Adapter categories:
+  - status/auth (`chatgpt_status`, `chatgpt_auth_*`)
+  - schema/threads/messages (`chatgpt_schema`, `chatgpt_threads_list`, `chatgpt_messages_list`)
+  - exchange/sync (`chatgpt_thread_exchange_start`, `chatgpt_exchange_status`, `chatgpt_sync_*`)
+  - events (`chatgpt_event_create`, `chatgpt_events_list`)
 
-## 7. Gateway API Surface (`ai_session_gateway/app/main.py`)
+## 7. Gateway API Surface (FastAPI)
 
-- Health/status/auth:
-  - `/health`, `/status`, `/auth/*`
-  - `ai_session_gateway/app/main.py:128-208`
-- Data entities:
-  - `/v1/schema`, `/v1/threads`, `/v1/threads/{id}/messages`
-  - `ai_session_gateway/app/main.py:211-358`
-- Exchange async:
-  - `/v1/threads/{id}/exchange/start` + `/v1/exchanges/{exchange_id}`
-  - `ai_session_gateway/app/main.py:947-1085`
-- Sync async:
-  - `/v1/sync/*/start` + `/v1/sync/jobs/{job_id}`
-  - `ai_session_gateway/app/main.py:1380-1430`
-- Sync single thread:
-  - `/v1/threads/{id}/sync_history`
-  - `ai_session_gateway/app/main.py:1433-1484`
-- Legacy synchronous exchange endpoint still present:
-  - `/v1/threads/{id}/exchange`
-  - `ai_session_gateway/app/main.py:1487-1662`
-- Event write/read:
-  - `/v1/events`
-  - `ai_session_gateway/app/main.py:1665-1690`
+- File:
+  - `ai_session_gateway/app/main.py`
+- Endpoint groups:
+  - health/status/auth
+  - schema/threads/messages
+  - exchange start/status (async)
+  - sync start/status/history
+  - events write/read
 
 ## 8. Gateway Internal ChatGPT Surface
 
-- In-memory task registries:
-  - `exchange_tasks`, `sync_tasks`
-  - `ai_session_gateway/app/main.py:42-45`
-- Shared browser profile lock:
-  - `profile_lock`
-  - `ai_session_gateway/app/main.py:37`
-- Playwright exchange and history adapters:
-  - `exchange_once` -> `ai_session_gateway/app/exchange.py:768-860`
-  - `sync_history_once` -> `ai_session_gateway/app/exchange.py:697-765`
-  - `scan_threads_index_once` -> `ai_session_gateway/app/exchange.py:543-692`
+- File:
+  - `ai_session_gateway/app/main.py`
+  - `ai_session_gateway/app/exchange.py`
+- Core internals:
+  - in-memory task registries (`exchange_tasks`, `sync_tasks`)
+  - shared browser profile lock (`profile_lock`)
+  - Playwright exchange/sync scanners (`exchange_once`, `sync_history_once`, `scan_threads_index_once`)
 
 ## 9. ChatGPT Persistence Surface (Postgres)
 
-- Schema creation:
-  - `auth_sessions`, `auth_events`
-  - `integration_threads`, `integration_messages`
-  - `integration_message_attachments`, `integration_events`
-  - `ai_session_gateway/app/db.py:90-240`
-- Payload contracts:
-  - Pydantic models for threads/messages/exchange/sync/events
-  - `ai_session_gateway/app/contracts.py:19-87`
+- Schema/init:
+  - `ai_session_gateway/app/db.py`
+- Main tables:
+  - `integration_threads`
+  - `integration_messages`
+  - `integration_message_attachments`
+  - `integration_events`
 
 ## 10. Coupling Points to Core App
 
 - Core keeps routing/shell/data bootstrap and mounts module entry points:
   - `web/index.php:74` (AJAX delegate)
-  - `web/index.php:5638` (view include)
+  - `web/index.php:4511` (view include)
 - Module view still depends on parent variable scope (transitional coupling):
   - `web/modules/chatgpt/views/session.php`
-- ChatGPT tab shares topbar and app shell logic with LinkedIn and Editorial:
+- ChatGPT shares topbar/shell with LinkedIn and Editorial:
   - `web/index.php` topbar section

@@ -17,11 +17,18 @@
    - `web/index.php` -> `require __DIR__ . '/modules/chatgpt/views/session.php';`
 4. Catalog data source:
    - `chatgpt_module_catalog()` for models/projects/groups.
+5. Route-scoped stylesheet:
+   - `web/index.php` -> `chatgpt.module.css` when `view=chatgpt`.
 
 ## Module HTTP/AJAX Contract (current)
 
-Handled by:
-- `web/modules/chatgpt/http/ajax.php`
+Routing stack:
+- `web/modules/chatgpt/http/ajax.php` (dispatcher)
+- `web/modules/chatgpt/routes/api.php` (route map)
+- `web/modules/chatgpt/controllers/ChatApiController.php` (transport controller)
+- `web/modules/chatgpt/services/ChatOrchestrator.php` (business orchestration)
+- `web/modules/chatgpt/services/SessionManager.php` (payload/session normalization)
+- `web/modules/chatgpt/providers/GatewayProvider.php` (gateway adapter)
 
 Supported actions:
 
@@ -36,7 +43,7 @@ Supported actions:
 Response style:
 
 - JSON payloads with `ok: true|false`
-- HTTP code passthrough where available
+- HTTP codes aligned to orchestration outcome
 - `detail` used for error description
 
 ## Module View Contract (current)
@@ -46,9 +53,11 @@ Response style:
   - thread/message vars (`$chatgptThreadId`, `$chatgptThreads`, `$chatgptMessages`)
   - catalog vars (`$chatgptModels`, `$chatgptProjects`, `$chatgptGroups`)
   - gateway/schema vars (`$chatgptGatewayState`, `$chatgptSchema`)
+- Runtime JS asset:
+  - `web/modules/chatgpt/assets/js/chatgpt.module.js`
 
 ## Pending Contract Cleanup
 
-1. Move ChatGPT CSS to module asset file and load only for ChatGPT route.
-2. Move ChatGPT JS runtime to module asset file with namespaced boot function.
-3. Replace variable-scope coupling with explicit view context array or controller DTO.
+1. Replace variable-scope coupling with explicit view context array or module controller DTO.
+2. Define web route contract in `routes/web.php` and mount ChatGPT SSR via module controller.
+3. Stabilize internal module contract for sync/exchange task lifecycle (to support next persistence refactor).

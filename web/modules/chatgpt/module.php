@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/manifest.php';
+require_once __DIR__ . '/providers/GatewayProvider.php';
+require_once __DIR__ . '/services/SessionManager.php';
+require_once __DIR__ . '/services/ChatOrchestrator.php';
+require_once __DIR__ . '/controllers/ChatApiController.php';
+require_once __DIR__ . '/routes/api.php';
 require_once __DIR__ . '/http/ajax.php';
 
 function chatgpt_module_manifest(): array
