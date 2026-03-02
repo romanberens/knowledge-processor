@@ -1,0 +1,17 @@
+# Secrets and local env files
+.env
+.env.*
+!.env.example
+
+# Runtime profile/session storage (browser data, cookies, local tokens)
+profile/
+ai_session_profile/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE / OS
+.DS_Store
+.vscode/
+.idea/

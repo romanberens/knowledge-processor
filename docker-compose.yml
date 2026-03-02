@@ -1,0 +1,100 @@
+services:
+  db:
+    image: mysql:8.0
+    command: >-
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD not set}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-linkedin_archive}
+      MYSQL_USER: ${MYSQL_USER:-li_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD not set}
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - li_net
+    restart: unless-stopped
+
+  scraper:
+    build:
+      context: ./scraper
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-linkedin_archive}
+      DB_USER: ${MYSQL_USER:-li_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD not set}
+      PROFILE_DIR: /profile
+      LINKEDIN_PROFILE_SLUG: wirtualnaredakcja-pl
+      SCRAPER_HOST: 0.0.0.0
+      SCRAPER_PORT: 8090
+      HEADLESS: "true"
+      SCROLL_DELAY_MIN_MS: 1200
+      SCROLL_DELAY_MAX_MS: 2500
+    shm_size: "1gb"
+    volumes:
+      - ./profile:/profile
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8090:8090"
+      - "127.0.0.1:7900:7900"
+    networks:
+      - li_net
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./web
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${MYSQL_DATABASE:-linkedin_archive}
+      DB_USER: ${MYSQL_USER:-li_user}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?MYSQL_PASSWORD not set}
+      SCRAPER_API_BASE: http://scraper:8090
+      CHATGPT_SESSION_API_BASE: ${CHATGPT_SESSION_API_BASE:-http://ai_session_gateway:8190}
+      APP_TZ: Europe/Warsaw
+      APP_SECRET: ${APP_SECRET:?APP_SECRET not set}
+      STRAPI_BASE_URL: ${STRAPI_BASE_URL:-}
+      STRAPI_API_TOKEN: ${STRAPI_API_TOKEN:-}
+      STRAPI_CONTENT_TYPE: ${STRAPI_CONTENT_TYPE:-articles}
+    volumes:
+      - ./web:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+      scraper:
+        condition: service_started
+    ports:
+      - "127.0.0.1:8080:80"
+    networks:
+      - li_net
+    restart: unless-stopped
+
+  adminer:
+    image: adminer:4
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8081:8080"
+    networks:
+      - li_net
+    restart: unless-stopped
+    profiles: ["debug"]
+
+volumes:
+  db_data:
+
+networks:
+  li_net:
+    driver: bridge

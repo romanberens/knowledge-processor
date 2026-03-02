@@ -1,0 +1,65 @@
+services:
+  ai_session_db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${AI_SESSION_POSTGRES_DB:-ai_session}
+      POSTGRES_USER: ${AI_SESSION_POSTGRES_USER:-ai_session}
+      POSTGRES_PASSWORD: ${AI_SESSION_POSTGRES_PASSWORD:?AI_SESSION_POSTGRES_PASSWORD not set}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - ai_session_pg_data:/var/lib/postgresql/data
+    networks:
+      - ai_session_net
+    restart: unless-stopped
+
+  ai_session_gateway:
+    build:
+      context: ./ai_session_gateway
+    environment:
+      DB_HOST: ai_session_db
+      DB_PORT: 5432
+      DB_NAME: ${AI_SESSION_POSTGRES_DB:-ai_session}
+      DB_USER: ${AI_SESSION_POSTGRES_USER:-ai_session}
+      DB_PASSWORD: ${AI_SESSION_POSTGRES_PASSWORD:?AI_SESSION_POSTGRES_PASSWORD not set}
+      PROFILE_DIR: /profile
+      SESSION_HOST: 0.0.0.0
+      SESSION_PORT: 8190
+      SESSION_TARGET_NAME: ${SESSION_TARGET_NAME:-chatgpt}
+      SESSION_LOGIN_URL: ${SESSION_LOGIN_URL:-https://chatgpt.com/auth/login}
+      SESSION_AUTH_CHECK_URL: ${SESSION_AUTH_CHECK_URL:-https://chatgpt.com/}
+      SESSION_HEADLESS_AUTH_CHECK: "true"
+      SESSION_AUTH_CHECK_TIMEOUT_MS: 20000
+      SESSION_HEADLESS_EXCHANGE: "false"
+      SESSION_EXCHANGE_TIMEOUT_MS: 180000
+      SESSION_EXCHANGE_RESPONSE_STABLE_MS: 2500
+      NOVNC_PUBLIC_URL: ${NOVNC_PUBLIC_URL:-http://127.0.0.1:7790/vnc.html?autoconnect=1&resize=remote&reconnect=1}
+      XVFB_DISPLAY: ":99"
+      CHROMIUM_BIN: /usr/bin/google-chrome
+      STATUS_CACHE_TTL_SECONDS: 30
+    shm_size: "1gb"
+    volumes:
+      - ./ai_session_profile:/profile
+    depends_on:
+      ai_session_db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8190:8190"
+      - "127.0.0.1:7790:7900"
+    networks:
+      - ai_session_net
+      - li_net
+    restart: unless-stopped
+
+volumes:
+  ai_session_pg_data:
+
+networks:
+  ai_session_net:
+    driver: bridge
+  li_net:
+    external: true
+    name: linkedin_profletools_li_net
