@@ -11,6 +11,9 @@ Stack:
 - Panel: PHP 8.3 + Foundation,
 - Orkiestracja: Docker Compose.
 
+Szybki start po klonie:
+- zobacz [RUN_FROM_GITHUB.md](RUN_FROM_GITHUB.md)
+
 ## Sekrety i konfiguracja
 
 Repozytorium nie powinno zawierać sekretów. Przed uruchomieniem:
