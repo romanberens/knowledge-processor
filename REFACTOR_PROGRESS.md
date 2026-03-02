@@ -15,7 +15,7 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-4 completed: shell + assets + api wrappers + context builder |
+| ChatGPT code extraction | In progress | Steps 1-5 completed: shell + assets + api wrappers + context/render wrappers |
 | Integration and regression validation | Pending | Phase 3 |
 
 ## Activity Log
@@ -54,9 +54,13 @@
   - extracted ChatGPT page bootstrap into `services/ChatViewContextBuilder.php`
   - added module context entrypoint `chatgpt_module_build_view_context(...)`
   - replaced large ChatGPT data bootstrap block in `web/index.php` with module context call
+- Completed PHASE-2 extraction step 5:
+  - added module SSR render wrapper `chatgpt_module_render_session(...)`
+  - moved ChatGPT session mount in core from direct `require` to module controller call
+  - added module web route map (`routes/web.php`)
 
 ## Next Actions
 
-1. Add module web-route wrapper and reduce view-coupling to parent scope.
+1. Reduce view variable contract in `views/session.php` to explicit DTO keys.
 2. Execute browser smoke tests for send/stream/sync/chat-history flows.
 3. Prepare PHASE-3 integration pass (regression + cleanup markers).

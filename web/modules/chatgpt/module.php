@@ -7,7 +7,9 @@ require_once __DIR__ . '/providers/GatewayProvider.php';
 require_once __DIR__ . '/services/SessionManager.php';
 require_once __DIR__ . '/services/ChatOrchestrator.php';
 require_once __DIR__ . '/services/ChatViewContextBuilder.php';
+require_once __DIR__ . '/controllers/ChatController.php';
 require_once __DIR__ . '/controllers/ChatApiController.php';
+require_once __DIR__ . '/routes/web.php';
 require_once __DIR__ . '/routes/api.php';
 require_once __DIR__ . '/http/ajax.php';
 
@@ -41,6 +43,11 @@ function chatgpt_module_catalog(): array
 function chatgpt_module_build_view_context(string $view, string $chatgptTab, array $query, array $session): array
 {
     return ChatViewContextBuilder::build($view, $chatgptTab, $query, $session);
+}
+
+function chatgpt_module_render_session(array $context): void
+{
+    ChatController::renderSession($context);
 }
 
 function chatgpt_module_handle_ajax_request(): void

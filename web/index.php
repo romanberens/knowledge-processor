@@ -4463,7 +4463,10 @@ function slugify(string $title): string
                 <?php
                 // [REF-MOD-CHATGPT]
                 // ChatGPT session UI/runtime extracted from monolithic index.php.
-                require __DIR__ . '/modules/chatgpt/views/session.php';
+                chatgpt_module_render_session(array_merge(
+                    ['view' => $view, 'chatgptTab' => $chatgptTab],
+                    $chatgptContext
+                ));
                 ?>
 
                 <?php if ($view === 'runs'): ?>

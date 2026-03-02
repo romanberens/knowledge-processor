@@ -14,7 +14,9 @@
 | Module manifest syntax | `php -l web/modules/chatgpt/manifest.php` | PASS |
 | Module AJAX dispatcher syntax | `php -l web/modules/chatgpt/http/ajax.php` | PASS |
 | Module API routes syntax | `php -l web/modules/chatgpt/routes/api.php` | PASS |
+| Module web routes syntax | `php -l web/modules/chatgpt/routes/web.php` | PASS |
 | Module API controller syntax | `php -l web/modules/chatgpt/controllers/ChatApiController.php` | PASS |
+| Module web controller syntax | `php -l web/modules/chatgpt/controllers/ChatController.php` | PASS |
 | Module orchestrator syntax | `php -l web/modules/chatgpt/services/ChatOrchestrator.php` | PASS |
 | Module session manager syntax | `php -l web/modules/chatgpt/services/SessionManager.php` | PASS |
 | Module gateway provider syntax | `php -l web/modules/chatgpt/providers/GatewayProvider.php` | PASS |

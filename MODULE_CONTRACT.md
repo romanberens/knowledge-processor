@@ -14,7 +14,8 @@
 2. AJAX delegation:
    - `web/index.php` -> `chatgpt_module_handle_ajax_request();`
 3. Session UI mounting:
-   - `web/index.php` -> `require __DIR__ . '/modules/chatgpt/views/session.php';`
+   - `web/index.php` -> `chatgpt_module_render_session(...)`
+   - `web/modules/chatgpt/controllers/ChatController.php` -> `views/session.php`
 4. Catalog data source:
    - `chatgpt_module_catalog()` for models/projects/groups.
 5. Route-scoped stylesheet:
@@ -52,10 +53,12 @@ Response style:
 ## Module View Contract (current)
 
 - `web/modules/chatgpt/views/session.php` expects the same variable scope as previous `web/index.php` inline block, including:
+- `web/modules/chatgpt/views/session.php` receives context map via module controller and expects keys including:
   - auth/session vars (`$chatgptAuthState`, `$chatgptHasLoginSession`, etc.)
   - thread/message vars (`$chatgptThreadId`, `$chatgptThreads`, `$chatgptMessages`)
   - catalog vars (`$chatgptModels`, `$chatgptProjects`, `$chatgptGroups`)
   - gateway/schema vars (`$chatgptGatewayState`, `$chatgptSchema`)
+  - route vars (`$view`, `$chatgptTab`)
 - Runtime JS asset:
   - `web/modules/chatgpt/assets/js/chatgpt.module.js`
 

@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-4 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-5 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -58,6 +58,16 @@
    - `chatgpt_module_build_view_context(...)` in `web/modules/chatgpt/module.php`
    - usage in `web/index.php`
 
+## Completed in Step 5
+
+1. Module SSR render wrapper introduced:
+   - `chatgpt_module_render_session(...)` in `web/modules/chatgpt/module.php`
+   - controller mount: `controllers/ChatController.php`
+2. Core now mounts ChatGPT session via module function instead of direct `require`:
+   - `web/index.php`
+3. Module web route map introduced:
+   - `web/modules/chatgpt/routes/web.php` (`chatgpt_module_web_routes()`)
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -70,9 +80,9 @@
 
 ## Pending (next)
 
-1. Introduce module web-route wrapper (`routes/web.php`) for SSR mounting contract.
-2. Reduce `views/session.php` parent-scope dependency via explicit DTO/context structure.
-3. Run browser smoke validation for chat send/poll/sync flows after wrapper split.
+1. Reduce `views/session.php` variable contract to stricter DTO (drop redundant keys and implicit dependencies).
+2. Run browser smoke validation for chat send/poll/sync flows after wrapper split.
+3. Prepare PHASE-3 integration pass and marker cleanup.
 
 ## Validation Checklist
 
@@ -85,4 +95,6 @@
 - `php -l web/modules/chatgpt/services/SessionManager.php` pass
 - `php -l web/modules/chatgpt/providers/GatewayProvider.php` pass
 - `php -l web/modules/chatgpt/services/ChatViewContextBuilder.php` pass
+- `php -l web/modules/chatgpt/controllers/ChatController.php` pass
+- `php -l web/modules/chatgpt/routes/web.php` pass
 - `php -l web/modules/chatgpt/views/session.php` pass
