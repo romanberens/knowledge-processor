@@ -19,6 +19,9 @@
    - `chatgpt_module_catalog()` for models/projects/groups.
 5. Route-scoped stylesheet:
    - `web/index.php` -> `chatgpt.module.css` when `view=chatgpt`.
+6. View context bootstrap:
+   - `chatgpt_module_build_view_context(...)` in `web/modules/chatgpt/module.php`
+   - powered by `services/ChatViewContextBuilder.php`
 
 ## Module HTTP/AJAX Contract (current)
 

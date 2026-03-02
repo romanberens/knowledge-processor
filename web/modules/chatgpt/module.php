@@ -6,6 +6,7 @@ require_once __DIR__ . '/manifest.php';
 require_once __DIR__ . '/providers/GatewayProvider.php';
 require_once __DIR__ . '/services/SessionManager.php';
 require_once __DIR__ . '/services/ChatOrchestrator.php';
+require_once __DIR__ . '/services/ChatViewContextBuilder.php';
 require_once __DIR__ . '/controllers/ChatApiController.php';
 require_once __DIR__ . '/routes/api.php';
 require_once __DIR__ . '/http/ajax.php';
@@ -35,6 +36,11 @@ function chatgpt_module_catalog(): array
             ['id' => 'ur-procedury', 'name' => 'UR - procedury serwisowe'],
         ],
     ];
+}
+
+function chatgpt_module_build_view_context(string $view, string $chatgptTab, array $query, array $session): array
+{
+    return ChatViewContextBuilder::build($view, $chatgptTab, $query, $session);
 }
 
 function chatgpt_module_handle_ajax_request(): void

@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-3 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-4 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -50,6 +50,14 @@
 4. Module bootstrap now wires internal layers explicitly:
    - `web/modules/chatgpt/module.php`
 
+## Completed in Step 4
+
+1. ChatGPT page data bootstrap extracted from core:
+   - new service: `web/modules/chatgpt/services/ChatViewContextBuilder.php`
+2. Core now calls module context entrypoint instead of inline bootstrap logic:
+   - `chatgpt_module_build_view_context(...)` in `web/modules/chatgpt/module.php`
+   - usage in `web/index.php`
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -62,8 +70,8 @@
 
 ## Pending (next)
 
-1. Move ChatGPT data bootstrap (thread/auth/schema preload) from `web/index.php` to module-oriented service/controller context.
-2. Introduce module web-route wrapper (`routes/web.php`) for SSR mounting contract.
+1. Introduce module web-route wrapper (`routes/web.php`) for SSR mounting contract.
+2. Reduce `views/session.php` parent-scope dependency via explicit DTO/context structure.
 3. Run browser smoke validation for chat send/poll/sync flows after wrapper split.
 
 ## Validation Checklist
@@ -76,4 +84,5 @@
 - `php -l web/modules/chatgpt/services/ChatOrchestrator.php` pass
 - `php -l web/modules/chatgpt/services/SessionManager.php` pass
 - `php -l web/modules/chatgpt/providers/GatewayProvider.php` pass
+- `php -l web/modules/chatgpt/services/ChatViewContextBuilder.php` pass
 - `php -l web/modules/chatgpt/views/session.php` pass

@@ -15,7 +15,7 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-3 completed: shell + assets + api wrappers |
+| ChatGPT code extraction | In progress | Steps 1-4 completed: shell + assets + api wrappers + context builder |
 | Integration and regression validation | Pending | Phase 3 |
 
 ## Activity Log
@@ -50,9 +50,13 @@
     - `services/ChatOrchestrator.php`
     - `services/SessionManager.php`
     - `providers/GatewayProvider.php`
+- Completed PHASE-2 extraction step 4:
+  - extracted ChatGPT page bootstrap into `services/ChatViewContextBuilder.php`
+  - added module context entrypoint `chatgpt_module_build_view_context(...)`
+  - replaced large ChatGPT data bootstrap block in `web/index.php` with module context call
 
 ## Next Actions
 
-1. Move ChatGPT data bootstrap from `web/index.php` into module-oriented context provider.
-2. Add module web-route wrapper and reduce view-coupling to parent scope.
-3. Execute browser smoke tests for send/stream/sync/chat-history flows.
+1. Add module web-route wrapper and reduce view-coupling to parent scope.
+2. Execute browser smoke tests for send/stream/sync/chat-history flows.
+3. Prepare PHASE-3 integration pass (regression + cleanup markers).

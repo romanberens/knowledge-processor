@@ -2,7 +2,7 @@
 
 ## Phase
 
-- `PHASE-2 / EXTRACTION` (steps 1-3)
+- `PHASE-2 / EXTRACTION` (steps 1-4)
 - Date: 2026-03-02
 
 ## Checks Executed
@@ -18,6 +18,7 @@
 | Module orchestrator syntax | `php -l web/modules/chatgpt/services/ChatOrchestrator.php` | PASS |
 | Module session manager syntax | `php -l web/modules/chatgpt/services/SessionManager.php` | PASS |
 | Module gateway provider syntax | `php -l web/modules/chatgpt/providers/GatewayProvider.php` | PASS |
+| Module view-context builder syntax | `php -l web/modules/chatgpt/services/ChatViewContextBuilder.php` | PASS |
 | Module session view syntax | `php -l web/modules/chatgpt/views/session.php` | PASS |
 
 ## Notes

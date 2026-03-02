@@ -38,13 +38,12 @@ Supported actions:
 
 ## 3. ChatGPT Server-side Data Bootstrap in `web/index.php`
 
-- Gateway/auth/thread selection:
-  - `web/index.php:1084-1150`
-- Thread message preload:
-  - `web/index.php:1153-1164`
+- Core callsite:
+  - `web/index.php:1087` (`chatgpt_module_build_view_context(...)`)
+- Module context service:
+  - `web/modules/chatgpt/services/ChatViewContextBuilder.php`
 - Catalog source:
-  - `chatgpt_module_catalog()` -> `web/index.php:1102`
-  - implementation in `web/modules/chatgpt/module.php`
+  - `chatgpt_module_catalog()` in `web/modules/chatgpt/module.php`
 
 ## 4. ChatGPT UI Components (SSR)
 

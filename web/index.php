@@ -1082,77 +1082,32 @@ $effectiveNovncUrl = $novncUrl !== '' ? $novncUrl : (string)($authInfo['novnc_ur
 $hasLoginSession = $effectiveSessionId !== '';
 $canScrape = !$isRunning && $authState === 'AUTH_OK' && !$hasLoginSession;
 
-$chatgptGatewayState = chatgpt_status();
-$chatgptGatewayOk = (bool)($chatgptGatewayState['ok'] ?? false);
-$chatgptLoginSessionId = (string)($_SESSION['cgpt_login_session_id'] ?? '');
-$chatgptNovncUrl = (string)($_SESSION['cgpt_novnc_url'] ?? '');
-$chatgptAuthInfo = $chatgptLoginSessionId !== '' ? chatgpt_auth_login_status($chatgptLoginSessionId) : chatgpt_auth_status();
-$chatgptAuthState = (string)($chatgptAuthInfo['state'] ?? 'AUTH_UNKNOWN');
-$chatgptEffectiveSessionId = $chatgptLoginSessionId !== ''
-    ? $chatgptLoginSessionId
-    : (string)($chatgptAuthInfo['login_session_id'] ?? '');
-$chatgptEffectiveNovncUrl = $chatgptNovncUrl !== ''
-    ? $chatgptNovncUrl
-    : (string)($chatgptAuthInfo['novnc_url'] ?? '');
-$chatgptHasLoginSession = $chatgptEffectiveSessionId !== '';
-$chatgptAssistantId = trim((string)($_GET['assistant'] ?? 'chatgpt-5.2'));
-$chatgptProjectId = trim((string)($_GET['project'] ?? 'lab-onenetworks'));
-$chatgptThreadId = trim((string)($_GET['thread'] ?? ''));
-$chatgptNewChat = ((string)($_GET['new_chat'] ?? '') === '1');
-$chatgptCatalog = chatgpt_module_catalog();
-$chatgptModels = is_array($chatgptCatalog['models'] ?? null) ? $chatgptCatalog['models'] : [];
-$chatgptProjects = is_array($chatgptCatalog['projects'] ?? null) ? $chatgptCatalog['projects'] : [];
-$chatgptGroups = is_array($chatgptCatalog['groups'] ?? null) ? $chatgptCatalog['groups'] : [];
-if (!in_array($chatgptAssistantId, array_column($chatgptModels, 'id'), true)) {
-    $chatgptAssistantId = (string)$chatgptModels[0]['id'];
-}
-if (!in_array($chatgptProjectId, array_column($chatgptProjects, 'id'), true)) {
-    $chatgptProjectId = (string)$chatgptProjects[0]['id'];
-}
-$chatgptSchema = $view === 'chatgpt' ? chatgpt_schema() : ['ok' => false];
-$chatgptThreadIndex = $view === 'chatgpt'
-    ? chatgpt_threads_list(120, $chatgptProjectId, $chatgptAssistantId, null)
-    : ['ok' => false];
-$chatgptThreads = [];
-if (
-    !empty($chatgptThreadIndex['ok'])
-    && is_array($chatgptThreadIndex['body'] ?? null)
-    && is_array($chatgptThreadIndex['body']['items'] ?? null)
-) {
-    foreach ($chatgptThreadIndex['body']['items'] as $row) {
-        if (!is_array($row)) {
-            continue;
-        }
-        $tid = trim((string)($row['thread_id'] ?? ''));
-        $ttl = trim((string)($row['title'] ?? ''));
-        if ($tid === '' || $ttl === '') {
-            continue;
-        }
-        $chatgptThreads[] = ['id' => $tid, 'name' => $ttl];
-    }
-}
-$chatgptThreadsRecent = array_slice($chatgptThreads, 0, 10);
-
-if ($chatgptNewChat) {
-    $chatgptThreadId = '';
-} elseif (!in_array($chatgptThreadId, array_column($chatgptThreads, 'id'), true) && $chatgptThreads) {
-    $chatgptThreadId = (string)$chatgptThreads[0]['id'];
-} elseif (!$chatgptThreads) {
-    $chatgptThreadId = '';
-}
-
-$chatgptMessagesPayload = ['ok' => false];
-$chatgptMessages = [];
-if ($view === 'chatgpt' && $chatgptTab === 'session' && $chatgptThreadId !== '') {
-    $chatgptMessagesPayload = chatgpt_messages_list($chatgptThreadId, 200);
-    if (
-        !empty($chatgptMessagesPayload['ok'])
-        && is_array($chatgptMessagesPayload['body'] ?? null)
-        && is_array($chatgptMessagesPayload['body']['items'] ?? null)
-    ) {
-        $chatgptMessages = $chatgptMessagesPayload['body']['items'];
-    }
-}
+// [REF-MOD-CHATGPT]
+// ChatGPT view context is prepared in module service layer.
+$chatgptContext = chatgpt_module_build_view_context($view, $chatgptTab, $_GET, $_SESSION);
+$chatgptGatewayState = $chatgptContext['chatgptGatewayState'];
+$chatgptGatewayOk = $chatgptContext['chatgptGatewayOk'];
+$chatgptLoginSessionId = $chatgptContext['chatgptLoginSessionId'];
+$chatgptNovncUrl = $chatgptContext['chatgptNovncUrl'];
+$chatgptAuthInfo = $chatgptContext['chatgptAuthInfo'];
+$chatgptAuthState = $chatgptContext['chatgptAuthState'];
+$chatgptEffectiveSessionId = $chatgptContext['chatgptEffectiveSessionId'];
+$chatgptEffectiveNovncUrl = $chatgptContext['chatgptEffectiveNovncUrl'];
+$chatgptHasLoginSession = $chatgptContext['chatgptHasLoginSession'];
+$chatgptAssistantId = $chatgptContext['chatgptAssistantId'];
+$chatgptProjectId = $chatgptContext['chatgptProjectId'];
+$chatgptThreadId = $chatgptContext['chatgptThreadId'];
+$chatgptNewChat = $chatgptContext['chatgptNewChat'];
+$chatgptCatalog = $chatgptContext['chatgptCatalog'];
+$chatgptModels = $chatgptContext['chatgptModels'];
+$chatgptProjects = $chatgptContext['chatgptProjects'];
+$chatgptGroups = $chatgptContext['chatgptGroups'];
+$chatgptSchema = $chatgptContext['chatgptSchema'];
+$chatgptThreadIndex = $chatgptContext['chatgptThreadIndex'];
+$chatgptThreads = $chatgptContext['chatgptThreads'];
+$chatgptThreadsRecent = $chatgptContext['chatgptThreadsRecent'];
+$chatgptMessagesPayload = $chatgptContext['chatgptMessagesPayload'];
+$chatgptMessages = $chatgptContext['chatgptMessages'];
 
 $feedSource = $_GET['feed_source'] ?? '';
 $feedItems = $view === 'feed' ? fetch_feed_items($pdo, $feedSource ?: null, 150) : [];
