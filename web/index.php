@@ -430,177 +430,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'chatgpt_send_message') {
+        // [REF-MOD-CHATGPT]
+        // Legacy form submit path now delegates to the same async exchange
+        // orchestration as AJAX (`chatgpt_exchange_start`) to avoid dual logic.
         $prompt = trim((string)($_POST['chatgpt_prompt'] ?? ''));
         $assistantId = trim((string)($_POST['chatgpt_assistant_id'] ?? 'chatgpt-5.2'));
         $projectId = trim((string)($_POST['chatgpt_project_id'] ?? ''));
         $threadId = trim((string)($_POST['chatgpt_thread_id'] ?? ''));
         $mode = trim((string)($_POST['chatgpt_mode'] ?? 'default'));
-        $comparisonPreference = trim((string)($_POST['chatgpt_comparison_preference'] ?? 'first'));
-        $threadTitle = trim((string)($_POST['chatgpt_thread_title'] ?? ''));
-        if (!in_array($comparisonPreference, ['first', 'second'], true)) {
-            $comparisonPreference = 'first';
+
+        $startResult = ChatOrchestrator::startExchange($_POST);
+        $startBody = is_array($startResult['body'] ?? null) ? $startResult['body'] : [];
+        $resolvedThreadId = trim((string)($startBody['thread_id'] ?? ''));
+        if ($resolvedThreadId === '') {
+            $resolvedThreadId = $threadId;
         }
 
-        if ($prompt === '') {
-            $_SESSION['flash'] = [
-                'type' => 'warning',
-                'text' => 'Wiadomość jest pusta. Wpisz treść przed wysłaniem.',
-            ];
-            $qs = [
-                'view' => 'chatgpt',
-                'tab' => 'session',
-                'assistant' => $assistantId,
-                'project' => $projectId,
-            ];
-            if ($threadId !== '') {
-                $qs['thread'] = $threadId;
+        if (!($startResult['ok'] ?? false)) {
+            $detail = trim((string)($startBody['detail'] ?? 'EXCHANGE_START_FAILED'));
+            $statusCode = (int)($startResult['http_status'] ?? 502);
+            if ($detail === 'EMPTY_PROMPT') {
+                $_SESSION['flash'] = [
+                    'type' => 'warning',
+                    'text' => 'Wiadomość jest pusta. Wpisz treść przed wysłaniem.',
+                ];
+            } elseif ($statusCode === 412 || $detail === 'AUTH_REQUIRED') {
+                $_SESSION['flash'] = [
+                    'type' => 'warning',
+                    'text' => 'Sesja ChatGPT wymaga logowania. Otwórz zakładkę Sesja i zaloguj się ponownie.',
+                ];
+            } elseif ($statusCode === 503 && $detail === 'CHALLENGE_PAGE') {
+                $_SESSION['flash'] = [
+                    'type' => 'warning',
+                    'text' => 'ChatGPT zwrócił stronę ochronną. Odśwież sesję w noVNC i wyślij ponownie.',
+                ];
+            } elseif ($statusCode === 409 && ($detail === 'PROFILE_BUSY' || $detail === 'LOGIN_SESSION_OPEN')) {
+                $_SESSION['flash'] = [
+                    'type' => 'warning',
+                    'text' => 'Profil jest zajęty przez okno logowania. Zamknij noVNC i spróbuj ponownie.',
+                ];
             } else {
-                $qs['new_chat'] = '1';
-            }
-            $redirectUrl = '/?' . http_build_query($qs, '', '&', PHP_QUERY_RFC3986);
-        } else {
-            if ($threadTitle === '') {
-                if (function_exists('mb_substr')) {
-                    $threadTitle = trim((string)mb_substr($prompt, 0, 72));
-                } else {
-                    $threadTitle = trim((string)substr($prompt, 0, 72));
-                }
-            }
-            if ($threadTitle === '') {
-                $threadTitle = 'Nowy wątek';
-            }
-
-            $threadPayload = [
-                'title' => $threadTitle,
-                'project_id' => $projectId !== '' ? $projectId : null,
-                'assistant_id' => $assistantId !== '' ? $assistantId : null,
-                'metadata' => [
-                    'source' => 'web-panel',
-                ],
-            ];
-            if ($threadId !== '') {
-                $threadPayload['thread_id'] = $threadId;
-            }
-
-            $threadResp = chatgpt_thread_upsert($threadPayload);
-            if (!$threadResp['ok'] || !is_array($threadResp['body'])) {
-                $detail = '';
-                if (is_array($threadResp['body']) && isset($threadResp['body']['detail'])) {
-                    $detail = (string)$threadResp['body']['detail'];
-                }
                 $_SESSION['flash'] = [
                     'type' => 'alert',
                     'text' => sprintf(
-                        'Nie udało się zapisać wątku (HTTP %d)%s',
-                        (int)($threadResp['status'] ?? 0),
+                        'Nie udało się uruchomić wymiany z ChatGPT (HTTP %d)%s',
+                        $statusCode,
                         $detail !== '' ? ': ' . $detail : '.'
                     ),
                 ];
-                $redirectUrl = '/?' . http_build_query(
-                    [
-                        'view' => 'chatgpt',
-                        'tab' => 'session',
-                        'assistant' => $assistantId,
-                        'project' => $projectId,
-                        'new_chat' => '1',
-                    ],
-                    '',
-                    '&',
-                    PHP_QUERY_RFC3986
-                );
-            } else {
-                $resolvedThreadId = trim((string)($threadResp['body']['thread_id'] ?? ''));
-                if ($resolvedThreadId === '') {
-                    $resolvedThreadId = $threadId;
-                }
-
-                $exchangePayload = [
-                    'prompt' => $prompt,
-                    'mode' => $mode !== '' ? $mode : 'default',
-                    'source' => 'web_panel',
-                    'comparison_preference' => $comparisonPreference,
-                    'metadata' => [
-                        'composer_mode' => $mode !== '' ? $mode : 'default',
-                    ],
-                    'assistant_metadata' => [
-                        'assistant_id' => $assistantId,
-                        'project_id' => $projectId,
-                    ],
-                ];
-
-                $exchangeResp = chatgpt_thread_exchange($resolvedThreadId, $exchangePayload);
-                if ($exchangeResp['ok'] && is_array($exchangeResp['body'])) {
-                    $elapsedMs = 0;
-                    if (
-                        is_array($exchangeResp['body']['exchange'] ?? null)
-                        && is_numeric($exchangeResp['body']['exchange']['elapsed_ms'] ?? null)
-                    ) {
-                        $elapsedMs = (int)$exchangeResp['body']['exchange']['elapsed_ms'];
-                    }
-                    chatgpt_event_create([
-                        'event_type' => 'composer_message_submitted',
-                        'thread_id' => $resolvedThreadId,
-                        'source' => 'web_panel',
-                        'payload' => [
-                            'mode' => $mode !== '' ? $mode : 'default',
-                            'chars' => strlen($prompt),
-                            'elapsed_ms' => $elapsedMs,
-                        ],
-                    ]);
-                    $_SESSION['flash'] = [
-                        'type' => 'success',
-                        'text' => sprintf(
-                            'Wysłano do ChatGPT i zapisano odpowiedź lokalnie (czas: %d ms).',
-                            $elapsedMs
-                        ),
-                    ];
-                } else {
-                    $detail = '';
-                    if (is_array($exchangeResp['body']) && isset($exchangeResp['body']['detail'])) {
-                        $detail = (string)$exchangeResp['body']['detail'];
-                    }
-                    $statusCode = (int)($exchangeResp['status'] ?? 0);
-                    if ($statusCode === 412 || $detail === 'AUTH_REQUIRED') {
-                        $_SESSION['flash'] = [
-                            'type' => 'warning',
-                            'text' => 'Sesja ChatGPT wymaga logowania. Otwórz zakładkę Sesja i zaloguj się ponownie.',
-                        ];
-                    } elseif ($statusCode === 503 && $detail === 'CHALLENGE_PAGE') {
-                        $_SESSION['flash'] = [
-                            'type' => 'warning',
-                            'text' => 'ChatGPT zwrócił stronę ochronną. Odśwież sesję w noVNC i wyślij ponownie.',
-                        ];
-                    } elseif ($statusCode === 409 && ($detail === 'PROFILE_BUSY' || $detail === 'LOGIN_SESSION_OPEN')) {
-                        $_SESSION['flash'] = [
-                            'type' => 'warning',
-                            'text' => 'Profil jest zajęty przez okno logowania. Zamknij noVNC i spróbuj ponownie.',
-                        ];
-                    } else {
-                        $_SESSION['flash'] = [
-                            'type' => 'alert',
-                            'text' => sprintf(
-                                'Nie udało się wymienić wiadomości z ChatGPT (HTTP %d)%s',
-                                $statusCode,
-                                $detail !== '' ? ': ' . $detail : '.'
-                            ),
-                        ];
-                    }
-                }
-
-                $redirectUrl = '/?' . http_build_query(
-                    [
-                        'view' => 'chatgpt',
-                        'tab' => 'session',
-                        'assistant' => $assistantId,
-                        'project' => $projectId,
-                        'thread' => $resolvedThreadId,
-                    ],
-                    '',
-                    '&',
-                    PHP_QUERY_RFC3986
-                );
             }
+        } else {
+            $exchangeId = trim((string)($startBody['exchange_id'] ?? ''));
+            chatgpt_event_create([
+                'event_type' => 'composer_message_submitted',
+                'thread_id' => $resolvedThreadId !== '' ? $resolvedThreadId : null,
+                'source' => 'web_panel',
+                'payload' => [
+                    'mode' => $mode !== '' ? $mode : 'default',
+                    'chars' => strlen($prompt),
+                    'exchange_id' => $exchangeId,
+                    'path' => 'legacy_form_async_start',
+                ],
+            ]);
+            $_SESSION['flash'] = [
+                'type' => 'success',
+                'text' => $exchangeId !== ''
+                    ? sprintf('Wiadomość została wysłana. Exchange ID: %s', $exchangeId)
+                    : 'Wiadomość została wysłana. Odpowiedź jest przetwarzana asynchronicznie.',
+            ];
         }
+
+        $qs = [
+            'view' => 'chatgpt',
+            'tab' => 'session',
+            'assistant' => $assistantId,
+            'project' => $projectId,
+        ];
+        if ($resolvedThreadId !== '') {
+            $qs['thread'] = $resolvedThreadId;
+        } else {
+            $qs['new_chat'] = '1';
+        }
+        $redirectUrl = '/?' . http_build_query($qs, '', '&', PHP_QUERY_RFC3986);
     }
 
 	    if ($action === 'editorial_add_source') {

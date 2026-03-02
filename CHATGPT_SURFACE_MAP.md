@@ -37,6 +37,10 @@ Supported actions:
 - `chatgpt_sync_job_status`
 - `chatgpt_sync_history`
 
+Legacy non-AJAX fallback:
+- `web/index.php` action `chatgpt_send_message` delegates to
+  `ChatOrchestrator::startExchange($_POST)` for unified exchange-start semantics.
+
 ## 3. ChatGPT Server-side Data Bootstrap in `web/index.php`
 
 - Core callsite:

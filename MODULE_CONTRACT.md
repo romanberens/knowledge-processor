@@ -52,6 +52,12 @@ Response style:
 - HTTP codes aligned to orchestration outcome
 - `detail` used for error description
 
+Legacy form path alignment:
+
+- Core POST action `chatgpt_send_message` now delegates to module orchestrator:
+  - `ChatOrchestrator::startExchange($_POST)`
+- This keeps a single exchange-start semantics for both AJAX and non-JS fallback.
+
 ## Module View Contract (current)
 
 - `web/modules/chatgpt/views/session.php` receives context map via module controller and expects keys including:
@@ -68,5 +74,5 @@ Response style:
 ## Pending Contract Cleanup
 
 1. Stabilize internal module contract for sync/exchange task lifecycle (to support next persistence refactor).
-2. Decide whether to keep or remove legacy synchronous `chatgpt_send_message` POST flow in core.
+2. Decide whether to keep or remove legacy `chatgpt_send_message` POST fallback in core.
 3. Add browser regression checklist execution results (interactive smoke run).

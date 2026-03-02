@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-7 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-8 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -88,6 +88,15 @@
 2. Status view endpoint verified:
    - `GET /?view=chatgpt&tab=status` -> renders AUTH/Gateway cards and module JS include.
 
+## Completed in Step 8
+
+1. Legacy form submit path (`action=chatgpt_send_message`) was unified with async module orchestration:
+   - now delegates to `ChatOrchestrator::startExchange($_POST)` instead of using separate synchronous exchange logic.
+2. This removes dual message-exchange logic between:
+   - legacy form POST in `web/index.php`
+   - AJAX `chatgpt_exchange_start` route in module API.
+3. Redirect/flash behavior preserved for non-JS fallback.
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -102,7 +111,7 @@
 
 1. Run interactive browser smoke validation (VNC/UI) for send/poll/sync flows.
 2. Prepare PHASE-3 integration pass and marker cleanup.
-3. Decide fate of legacy synchronous `chatgpt_send_message` POST action in `web/index.php`.
+3. Optionally remove legacy form POST path fully after manual UX confirmation.
 
 ## Validation Checklist
 

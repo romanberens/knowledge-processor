@@ -38,3 +38,4 @@
 | Sync start validation | `POST /?view=chatgpt&tab=session&ajax=chatgpt_sync_start` with invalid kind | PASS (`HTTP 400`, `SYNC_KIND_REQUIRED`) |
 | Sync job status validation | `GET /?view=chatgpt&tab=session&ajax=chatgpt_sync_job_status` without `job_id` | PASS (`HTTP 400`, `JOB_ID_REQUIRED`) |
 | Status page render | `GET /?view=chatgpt&tab=status` | PASS (AUTH/Gateway cards rendered, module JS include present) |
+| Legacy form fallback validation | `POST /` with `action=chatgpt_send_message` and empty prompt | PASS (`HTTP 302`, redirect to ChatGPT session with `new_chat=1`) |
