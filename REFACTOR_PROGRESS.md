@@ -2,7 +2,7 @@
 
 ## Status
 
-- Current phase: `PHASE-2 / EXTRACTION`
+- Current phase: `PHASE-3 / INTEGRATION-CLEANUP`
 - Scope: ChatGPT module extraction
 - Owner: Codex + Roman
 - Last update: 2026-03-02
@@ -15,8 +15,8 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-10 completed: shell + wrappers + strict DTO + unified send + smoke automation |
-| Integration and regression validation | Pending | Phase 3 |
+| ChatGPT code extraction | Done | Steps 1-10 completed: shell + wrappers + strict DTO + unified send + smoke automation |
+| Integration and regression validation | In progress | Step 11 cleanup done, interactive smoke pending |
 
 ## Activity Log
 
@@ -76,9 +76,13 @@
   - added `scripts/chatgpt_http_smoke.sh` for repeatable HTTP regression checks
   - verified script result `PASS: 6`, `FAIL: 0`
   - updated `RUN_FROM_GITHUB.md` with smoke script usage
+- Completed PHASE-3 integration step 11:
+  - removed runtime `[REF-*]` markers from core/module PHP files
+  - added `INTEGRATION_NOTES.md` with final integration contracts
+  - confirmed marker leftovers exist only in `CODEX_AGENT_PLAYBOOK.md` (by design)
 
 ## Next Actions
 
 1. Execute interactive browser smoke tests for send/stream/sync/chat-history flows.
 2. Optionally remove legacy `chatgpt_send_message` path after UI confirmation.
-3. Prepare PHASE-3 integration pass (regression + cleanup markers).
+3. Run long-history sync manual validation under UI workload.

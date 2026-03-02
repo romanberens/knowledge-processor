@@ -9,7 +9,6 @@ final class ChatController
      */
     public static function renderSession(array $context): void
     {
-        // [REF-CONTRACT][CHATGPT]
         // Strict DTO bridge between core shell and module view.
         // Only whitelisted keys are exposed to the template.
         $viewModel = self::buildViewModel($context);

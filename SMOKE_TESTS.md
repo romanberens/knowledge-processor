@@ -40,3 +40,4 @@
 | Sync job status validation | `GET /?view=chatgpt&tab=session&ajax=chatgpt_sync_job_status` without `job_id` | PASS (`HTTP 400`, `JOB_ID_REQUIRED`) |
 | Status page render | `GET /?view=chatgpt&tab=status` | PASS (AUTH/Gateway cards rendered, module JS include present) |
 | Legacy form fallback validation | `POST /` with `action=chatgpt_send_message` and empty prompt | PASS (`HTTP 302`, redirect to ChatGPT session with `new_chat=1`) |
+| Runtime marker cleanup check | `rg -n \"\\[REF-[A-Z\\-]+\\]\" /home/roman/linkedin_profleTools` | PASS (matches only in `CODEX_AGENT_PLAYBOOK.md`) |

@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-10 done)`
+- Current: `PHASE-3 / INTEGRATION-CLEANUP (step 11 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -112,6 +112,17 @@
 3. Added script usage to runtime docs:
    - `RUN_FROM_GITHUB.md`
 
+## Completed in Step 11
+
+1. Removed temporary `[REF-*]` markers from runtime code paths:
+   - `web/index.php`
+   - `web/modules/chatgpt/http/ajax.php`
+   - `web/modules/chatgpt/controllers/ChatController.php`
+2. Final integration contract notes added:
+   - `INTEGRATION_NOTES.md`
+3. Marker scan confirms runtime cleanup:
+   - only `CODEX_AGENT_PLAYBOOK.md` retains marker examples/documentation.
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -125,8 +136,8 @@
 ## Pending (next)
 
 1. Run interactive browser smoke validation (VNC/UI) for send/poll/sync flows.
-2. Prepare PHASE-3 integration pass and marker cleanup.
-3. Optionally remove legacy form POST path fully after manual UX confirmation.
+2. Optionally remove legacy form POST path fully after manual UX confirmation.
+3. Execute one long-run sync-history manual validation session.
 
 ## Validation Checklist
 

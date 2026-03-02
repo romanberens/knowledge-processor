@@ -69,8 +69,7 @@ if (($_GET['ajax'] ?? '') === 'auth') {
     exit;
 }
 
-// [REF-MOD-CHATGPT]
-// ChatGPT AJAX surface was extracted to web/modules/chatgpt/http/ajax.php.
+// ChatGPT AJAX requests are delegated to the module dispatcher.
 chatgpt_module_handle_ajax_request();
 
 
@@ -430,9 +429,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'chatgpt_send_message') {
-        // [REF-MOD-CHATGPT]
-        // Legacy form submit path now delegates to the same async exchange
-        // orchestration as AJAX (`chatgpt_exchange_start`) to avoid dual logic.
+        // Legacy non-JS submit path uses the same async exchange start as AJAX.
         $prompt = trim((string)($_POST['chatgpt_prompt'] ?? ''));
         $assistantId = trim((string)($_POST['chatgpt_assistant_id'] ?? 'chatgpt-5.2'));
         $projectId = trim((string)($_POST['chatgpt_project_id'] ?? ''));
@@ -993,8 +990,7 @@ $effectiveNovncUrl = $novncUrl !== '' ? $novncUrl : (string)($authInfo['novnc_ur
 $hasLoginSession = $effectiveSessionId !== '';
 $canScrape = !$isRunning && $authState === 'AUTH_OK' && !$hasLoginSession;
 
-// [REF-MOD-CHATGPT]
-// ChatGPT view context is prepared in module service layer.
+// ChatGPT view context is prepared in the module service layer.
 $chatgptContext = chatgpt_module_build_view_context($view, $chatgptTab, $_GET, $_SESSION);
 $chatgptGatewayOk = (bool)($chatgptContext['chatgptGatewayOk'] ?? false);
 $chatgptAuthState = (string)($chatgptContext['chatgptAuthState'] ?? 'AUTH_UNKNOWN');
@@ -4351,8 +4347,7 @@ function slugify(string $title): string
                 <?php endif; ?>
 
                 <?php
-                // [REF-MOD-CHATGPT]
-                // ChatGPT session UI/runtime extracted from monolithic index.php.
+                // ChatGPT session UI/runtime is rendered by the module controller.
                 chatgpt_module_render_session(array_merge(
                     ['view' => $view, 'chatgptTab' => $chatgptTab],
                     $chatgptContext

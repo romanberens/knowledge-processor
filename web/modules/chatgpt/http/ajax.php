@@ -9,7 +9,6 @@ function chatgpt_ajax_dispatch(): void
         return;
     }
 
-    // [REF-CONTRACT][CHATGPT]
     // Routing contract for module AJAX handlers.
     // Source of truth is routes/api.php -> ChatApiController::routeMap().
     $routes = chatgpt_module_api_routes();

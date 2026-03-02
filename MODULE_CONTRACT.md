@@ -75,6 +75,16 @@ Legacy form path alignment:
 
 ## Pending Contract Cleanup
 
-1. Stabilize internal module contract for sync/exchange task lifecycle (to support next persistence refactor).
+1. Stabilize internal module contract for sync/exchange task lifecycle (future persistence refactor).
 2. Decide whether to keep or remove legacy `chatgpt_send_message` POST fallback in core.
-3. Add browser regression checklist execution results (interactive smoke run).
+3. Add interactive browser regression checklist execution results (VNC/manual run).
+
+## Contract Closure (Phase 3)
+
+Closed in code:
+
+- module bootstrap delegation,
+- module context/bootstrap separation,
+- strict DTO bridge in controller,
+- unified exchange-start semantics between AJAX and non-JS fallback,
+- runtime `[REF-*]` marker cleanup.
