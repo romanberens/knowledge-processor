@@ -23,6 +23,8 @@
 6. View context bootstrap:
    - `chatgpt_module_build_view_context(...)` in `web/modules/chatgpt/module.php`
    - powered by `services/ChatViewContextBuilder.php`
+7. Core topbar contract:
+   - core reads only `chatgptGatewayOk` and `chatgptAuthState` from module context.
 
 ## Module HTTP/AJAX Contract (current)
 
@@ -60,6 +62,8 @@ Response style:
   - route vars (`$view`, `$chatgptTab`)
 - Runtime JS asset:
   - `web/modules/chatgpt/assets/js/chatgpt.module.js`
+- DTO bridge:
+  - `ChatController::buildViewModel(...)` whitelists template keys before render.
 
 ## Pending Contract Cleanup
 

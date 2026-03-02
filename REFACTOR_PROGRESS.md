@@ -15,7 +15,7 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-6 completed: shell + assets + api wrappers + context/render + strict DTO |
+| ChatGPT code extraction | In progress | Steps 1-7 completed: shell + assets + wrappers + strict DTO + HTTP smoke |
 | Integration and regression validation | Pending | Phase 3 |
 
 ## Activity Log
@@ -62,9 +62,12 @@
   - reduced core ChatGPT context usage to topbar-only fields (`chatgptGatewayOk`, `chatgptAuthState`)
   - introduced strict view DTO whitelist in `ChatController::buildViewModel(...)`
   - reduced implicit variable leakage between core and module template
+- Completed PHASE-2 extraction step 7:
+  - executed local HTTP smoke checks for ChatGPT session/status and AJAX validation paths
+  - verified expected 200/400 status mapping and response payloads after DTO refactor
 
 ## Next Actions
 
-1. Execute browser smoke tests for send/stream/sync/chat-history flows.
+1. Execute interactive browser smoke tests for send/stream/sync/chat-history flows.
 2. Resolve legacy synchronous `chatgpt_send_message` path vs AJAX exchange path.
 3. Prepare PHASE-3 integration pass (regression + cleanup markers).

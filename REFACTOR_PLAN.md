@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-6 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-7 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -77,6 +77,17 @@
    - `web/modules/chatgpt/controllers/ChatController.php` (`buildViewModel`)
 3. Session view receives only whitelisted keys from controller bridge (reduced implicit coupling).
 
+## Completed in Step 7
+
+1. HTTP smoke/regression checks executed against local runtime (`localhost:8080`):
+   - `GET /?view=chatgpt&tab=session` -> `HTTP 200`
+   - `GET /?view=chatgpt&tab=session&ajax=chatgpt_auth` -> `HTTP 200`, `AUTH_OK`
+   - `POST /?view=chatgpt&tab=session&ajax=chatgpt_exchange_start` with empty prompt -> `HTTP 400`, `EMPTY_PROMPT`
+   - `POST /?view=chatgpt&tab=session&ajax=chatgpt_sync_start` with invalid kind -> `HTTP 400`, `SYNC_KIND_REQUIRED`
+   - `GET /?view=chatgpt&tab=session&ajax=chatgpt_sync_job_status` without id -> `HTTP 400`, `JOB_ID_REQUIRED`
+2. Status view endpoint verified:
+   - `GET /?view=chatgpt&tab=status` -> renders AUTH/Gateway cards and module JS include.
+
 ## Old -> New Mapping
 
 | Old location | New location | Status |
@@ -89,7 +100,7 @@
 
 ## Pending (next)
 
-1. Run browser smoke validation for chat send/poll/sync flows after DTO bridge.
+1. Run interactive browser smoke validation (VNC/UI) for send/poll/sync flows.
 2. Prepare PHASE-3 integration pass and marker cleanup.
 3. Decide fate of legacy synchronous `chatgpt_send_message` POST action in `web/index.php`.
 

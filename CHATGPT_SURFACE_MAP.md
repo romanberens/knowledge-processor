@@ -118,6 +118,9 @@ Supported actions:
 - Core keeps routing/shell/data bootstrap and mounts module entry points:
   - `web/index.php:74` (AJAX delegate)
   - `web/index.php:4445` (module session render call)
+- Core ChatGPT topbar dependency is reduced to two fields from context:
+  - `chatgptGatewayOk`
+  - `chatgptAuthState`
 - Module view still depends on module-provided context keys (transitional coupling):
   - `web/modules/chatgpt/views/session.php`
 - ChatGPT shares topbar/shell with LinkedIn and Editorial:

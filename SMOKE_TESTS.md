@@ -2,7 +2,7 @@
 
 ## Phase
 
-- `PHASE-2 / EXTRACTION` (steps 1-6)
+- `PHASE-2 / EXTRACTION` (steps 1-7)
 - Date: 2026-03-02
 
 ## Checks Executed
@@ -26,4 +26,15 @@
 ## Notes
 
 - This iteration focused on structural extraction with stable behavior contracts.
-- Browser-level smoke (send message, stream update, sync jobs, auth modal refresh) was not executed in this step.
+- Interactive browser-level smoke (send message, stream update, sync jobs, auth modal refresh) is pending.
+
+## Runtime HTTP Smoke
+
+| Check | Method | Result |
+| --- | --- | --- |
+| Session page render | `GET /?view=chatgpt&tab=session` | PASS (`HTTP 200`) |
+| Auth AJAX | `GET /?view=chatgpt&tab=session&ajax=chatgpt_auth` | PASS (`HTTP 200`, `state=AUTH_OK`) |
+| Exchange start validation | `POST /?view=chatgpt&tab=session&ajax=chatgpt_exchange_start` with empty prompt | PASS (`HTTP 400`, `EMPTY_PROMPT`) |
+| Sync start validation | `POST /?view=chatgpt&tab=session&ajax=chatgpt_sync_start` with invalid kind | PASS (`HTTP 400`, `SYNC_KIND_REQUIRED`) |
+| Sync job status validation | `GET /?view=chatgpt&tab=session&ajax=chatgpt_sync_job_status` without `job_id` | PASS (`HTTP 400`, `JOB_ID_REQUIRED`) |
+| Status page render | `GET /?view=chatgpt&tab=status` | PASS (AUTH/Gateway cards rendered, module JS include present) |
