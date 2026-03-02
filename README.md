@@ -14,6 +14,10 @@ Stack:
 Szybki start po klonie:
 - zobacz [RUN_FROM_GITHUB.md](RUN_FROM_GITHUB.md)
 
+Refactor workflow:
+- execution contract: [CODEX_AGENT_PLAYBOOK.md](CODEX_AGENT_PLAYBOOK.md)
+- current progress: [REFACTOR_PROGRESS.md](REFACTOR_PROGRESS.md)
+
 ## Sekrety i konfiguracja
 
 Repozytorium nie powinno zawierać sekretów. Przed uruchomieniem:
