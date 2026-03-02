@@ -49,6 +49,8 @@ Legacy non-AJAX fallback:
   - `web/modules/chatgpt/services/ChatViewContextBuilder.php`
 - Strict view DTO bridge:
   - `web/modules/chatgpt/controllers/ChatController.php` (`buildViewModel`)
+- Context payload policy:
+  - module context now carries rendering-critical keys only.
 - Catalog source:
   - `chatgpt_module_catalog()` in `web/modules/chatgpt/module.php`
 

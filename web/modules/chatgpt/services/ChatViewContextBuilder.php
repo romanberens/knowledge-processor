@@ -87,31 +87,26 @@ final class ChatViewContextBuilder
             }
         }
 
-        return compact(
-            'chatgptGatewayState',
-            'chatgptGatewayOk',
-            'chatgptLoginSessionId',
-            'chatgptNovncUrl',
-            'chatgptAuthInfo',
-            'chatgptAuthState',
-            'chatgptEffectiveSessionId',
-            'chatgptEffectiveNovncUrl',
-            'chatgptHasLoginSession',
-            'chatgptAssistantId',
-            'chatgptProjectId',
-            'chatgptThreadId',
-            'chatgptNewChat',
-            'chatgptCatalog',
-            'chatgptModels',
-            'chatgptProjects',
-            'chatgptGroups',
-            'chatgptSchema',
-            'chatgptThreadIndex',
-            'chatgptThreads',
-            'chatgptThreadsRecent',
-            'chatgptMessagesPayload',
-            'chatgptMessages'
-        );
+        return [
+            'chatgptGatewayState' => $chatgptGatewayState,
+            'chatgptGatewayOk' => $chatgptGatewayOk,
+            'chatgptAuthState' => $chatgptAuthState,
+            'chatgptEffectiveSessionId' => $chatgptEffectiveSessionId,
+            'chatgptEffectiveNovncUrl' => $chatgptEffectiveNovncUrl,
+            'chatgptHasLoginSession' => $chatgptHasLoginSession,
+            'chatgptAssistantId' => $chatgptAssistantId,
+            'chatgptProjectId' => $chatgptProjectId,
+            'chatgptThreadId' => $chatgptThreadId,
+            'chatgptNewChat' => $chatgptNewChat,
+            'chatgptModels' => $chatgptModels,
+            'chatgptProjects' => $chatgptProjects,
+            'chatgptGroups' => $chatgptGroups,
+            'chatgptSchema' => $chatgptSchema,
+            'chatgptThreadIndex' => $chatgptThreadIndex,
+            'chatgptThreads' => $chatgptThreads,
+            'chatgptThreadsRecent' => $chatgptThreadsRecent,
+            'chatgptMessages' => $chatgptMessages,
+        ];
     }
 
     private static function hasIds(array $rows): bool

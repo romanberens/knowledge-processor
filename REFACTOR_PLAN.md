@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-8 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-9 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -96,6 +96,13 @@
    - legacy form POST in `web/index.php`
    - AJAX `chatgpt_exchange_start` route in module API.
 3. Redirect/flash behavior preserved for non-JS fallback.
+
+## Completed in Step 9
+
+1. Module context payload was minimized in `ChatViewContextBuilder`:
+   - removed redundant context keys not used by topbar/view DTO bridge.
+2. Contract now stays focused on rendering needs:
+   - topbar status fields + session/status template data.
 
 ## Old -> New Mapping
 

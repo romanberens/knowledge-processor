@@ -25,6 +25,8 @@
    - powered by `services/ChatViewContextBuilder.php`
 7. Core topbar contract:
    - core reads only `chatgptGatewayOk` and `chatgptAuthState` from module context.
+8. Context payload scope:
+   - builder returns only rendering-critical keys consumed by topbar and module session/status views.
 
 ## Module HTTP/AJAX Contract (current)
 
