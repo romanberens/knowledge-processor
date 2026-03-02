@@ -32,6 +32,7 @@
 
 | Check | Method | Result |
 | --- | --- | --- |
+| Automated suite | `scripts/chatgpt_http_smoke.sh` | PASS (`PASS: 6`, `FAIL: 0`) |
 | Session page render | `GET /?view=chatgpt&tab=session` | PASS (`HTTP 200`) |
 | Auth AJAX | `GET /?view=chatgpt&tab=session&ajax=chatgpt_auth` | PASS (`HTTP 200`, `state=AUTH_OK`) |
 | Exchange start validation | `POST /?view=chatgpt&tab=session&ajax=chatgpt_exchange_start` with empty prompt | PASS (`HTTP 400`, `EMPTY_PROMPT`) |

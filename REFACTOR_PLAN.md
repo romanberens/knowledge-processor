@@ -2,7 +2,7 @@
 
 ## Phase
 
-- Current: `PHASE-2 / EXTRACTION (steps 1-9 done)`
+- Current: `PHASE-2 / EXTRACTION (steps 1-10 done)`
 - Strategy: extraction-first, behavior-preserving (no business logic rewrites)
 
 ## Constraint Applied
@@ -103,6 +103,14 @@
    - removed redundant context keys not used by topbar/view DTO bridge.
 2. Contract now stays focused on rendering needs:
    - topbar status fields + session/status template data.
+
+## Completed in Step 10
+
+1. Added repeatable HTTP smoke script:
+   - `scripts/chatgpt_http_smoke.sh`
+2. Script verifies 6 core checks (session/status/auth/exchange validation/sync validation) and exits non-zero on failures.
+3. Added script usage to runtime docs:
+   - `RUN_FROM_GITHUB.md`
 
 ## Old -> New Mapping
 

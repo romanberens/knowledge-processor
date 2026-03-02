@@ -15,7 +15,7 @@
 | Project architecture mapping | Done | `PROJECT_MAP.md`, `ARCHITECTURE_OVERVIEW.md` |
 | ChatGPT surface and flows map | Done | `CHATGPT_SURFACE_MAP.md`, `FLOWS.md` |
 | Risk register | Done | `RISK_REGISTER.md` |
-| ChatGPT code extraction | In progress | Steps 1-9 completed: shell + wrappers + strict DTO + unified send + slim context |
+| ChatGPT code extraction | In progress | Steps 1-10 completed: shell + wrappers + strict DTO + unified send + smoke automation |
 | Integration and regression validation | Pending | Phase 3 |
 
 ## Activity Log
@@ -72,6 +72,10 @@
 - Completed PHASE-2 extraction step 9:
   - minimized `ChatViewContextBuilder` output to rendering-critical keys only
   - removed redundant context fields not consumed by topbar or session/status view
+- Completed PHASE-2 extraction step 10:
+  - added `scripts/chatgpt_http_smoke.sh` for repeatable HTTP regression checks
+  - verified script result `PASS: 6`, `FAIL: 0`
+  - updated `RUN_FROM_GITHUB.md` with smoke script usage
 
 ## Next Actions
 

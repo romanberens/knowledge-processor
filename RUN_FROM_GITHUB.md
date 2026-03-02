@@ -95,6 +95,7 @@ Sesje przeglądarki nie są w repo i muszą zostać zbudowane lokalnie.
 curl http://127.0.0.1:8090/health
 curl http://127.0.0.1:8190/health
 curl http://127.0.0.1:8190/status
+./scripts/chatgpt_http_smoke.sh
 ```
 
 Jeśli endpointy zwracają `ok: true` i UI działa na `8080`, instalacja jest gotowa.
